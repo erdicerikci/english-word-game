@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Scramble Pro - Fast DB</title>
+    <title>Word Scramble Pro - First Letter Hint</title>
     <style>
         :root {
             --primary: #0f766e; --primary-hover: #115e59;
@@ -41,7 +41,7 @@
             margin-bottom: 15px; text-transform: uppercase;
         }
 
-        .hint-text { font-style: italic; color: var(--text-light); margin-bottom: 15px; min-height: 48px; }
+        .hint-text { font-style: italic; color: var(--text-light); margin-bottom: 15px; min-height: 24px; }
         .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
 
         input[type="text"] {
@@ -110,43 +110,28 @@
     </div>
 
     <script>
-        // API YERİNE DAHİLİ DEV VERİTABANI (Örnek: 100+ Kelime)
+        // SADECE KELİMELERİN OLDUĞU ÇOK DAHA BASİT VE HIZLI VERİTABANI
         const wordDatabase = [
-            { word: "language", hint: "Method of human communication" },
-            { word: "beautiful", hint: "Pleasing the senses or mind aesthetically" },
-            { word: "knowledge", hint: "Facts, information, and skills acquired through experience" },
-            { word: "environment", hint: "The surroundings in which a person, animal, or plant lives" },
-            { word: "technology", hint: "The application of scientific knowledge for practical purposes" },
-            { word: "adventure", hint: "An unusual and exciting or daring experience" },
-            { word: "important", hint: "Of great significance or value" },
-            { word: "university", hint: "An educational institution for higher learning" },
-            { word: "experience", hint: "Practical contact with and observation of facts or events" },
-            { word: "mysterious", hint: "Difficult or impossible to understand or explain" },
-            { word: "government", hint: "The group of people with the authority to rule a country" },
-            { word: "successful", hint: "Accomplishing a desired aim or result" },
-            { word: "difference", hint: "A point or way in which people or things are not the same" },
-            { word: "population", hint: "All the inhabitants of a particular place" },
-            { word: "literature", hint: "Written works, especially those considered of superior or lasting artistic merit" },
-            { word: "computer", hint: "An electronic device for storing and processing data" },
-            { word: "science", hint: "The intellectual and practical activity encompassing the systematic study of structure and behaviour" },
-            { word: "history", hint: "The study of past events, particularly in human affairs" },
-            { word: "education", hint: "The process of receiving or giving systematic instruction" },
-            { word: "building", hint: "A structure with a roof and walls, such as a house or factory" },
-            { word: "medicine", hint: "The science or practice of the diagnosis, treatment, and prevention of disease" },
-            { word: "industry", hint: "Economic activity concerned with the processing of raw materials" },
-            { word: "society", hint: "The aggregate of people living together in a more or less ordered community" },
-            { word: "business", hint: "A person's regular occupation, profession, or trade" },
-            { word: "question", hint: "A sentence worded or expressed so as to elicit information" },
-            { word: "answer", hint: "A thing that is said, written, or done as a reaction to a question" },
-            { word: "student", hint: "A person who is studying at a university or other place of higher education" },
-            { word: "teacher", hint: "A person who teaches, especially in a school" },
-            { word: "holiday", hint: "An extended period of leisure and recreation" },
-            { word: "journey", hint: "An act of travelling from one place to another" }
+            "language", "beautiful", "knowledge", "environment", "technology", "adventure", 
+            "important", "university", "experience", "mysterious", "government", "successful", 
+            "difference", "population", "literature", "computer", "science", "history", 
+            "education", "building", "medicine", "industry", "society", "business", 
+            "question", "answer", "student", "teacher", "holiday", "journey", "vessel", 
+            "anchor", "compass", "harbor", "captain", "voyage", "sailor", "lighthouse", 
+            "ocean", "navigate", "morning", "evening", "country", "family", "friend", 
+            "school", "office", "market", "garden", "summer", "winter", "spring", 
+            "autumn", "weather", "picture", "camera", "animal", "nature", "forest", 
+            "desert", "mountain", "river", "bridge", "window", "street", "village", 
+            "station", "airport", "ticket", "luggage", "festival", "concert", "theatre", 
+            "stadium", "library", "museum", "hospital", "kitchen", "bedroom", "balcony", 
+            "furniture", "machine", "engine", "vehicle", "traffic", "bicycle", "motorcycle", 
+            "airplane", "helicopter", "astronaut", "universe", "planet", "galaxy", 
+            "telescope", "microscope", "scientist", "chemistry", "biology", "physics"
         ];
 
         let currentWordIndex = 0;
         let score = 0;
-        let currentWordObj = {};
+        let currentWord = "";
         let timeLeft = 30;
         let timerInterval;
 
@@ -179,7 +164,7 @@
                 timeLeft--; timeEl.textContent = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    messageEl.textContent = `Time's up! The word was: ${currentWordObj.word}`;
+                    messageEl.textContent = `Time's up! The word was: ${currentWord}`;
                     messageEl.className = "message error";
                     currentWordIndex++;
                     setTimeout(loadNewWord, 2000);
@@ -190,11 +175,11 @@
         function loadNewWord() {
             if (currentWordIndex >= 10) { endGame(); return; }
             
-            // Havuzdan rastgele seç (Aynı kelime tekrar gelmesin diye basit mantık eklenebilir ama şu an rastgele)
-            currentWordObj = wordDatabase[Math.floor(Math.random() * wordDatabase.length)];
-            scrambledEl.textContent = shuffleWord(currentWordObj.word);
+            // Havuzdan rastgele kelime seç
+            currentWord = wordDatabase[Math.floor(Math.random() * wordDatabase.length)];
+            scrambledEl.textContent = shuffleWord(currentWord);
             
-            hintEl.textContent = "Hint: Click 'Get Hint' if you need help.";
+            hintEl.textContent = "Hint: Click 'Get Hint' for the first letter.";
             userInputEl.value = ""; messageEl.textContent = "";
             scoreEl.textContent = score; currentWordNumEl.textContent = currentWordIndex + 1;
             userInputEl.focus();
@@ -205,7 +190,7 @@
         function checkAnswer() {
             const userGuess = userInputEl.value.trim().toLowerCase();
             if (!userGuess) return;
-            if (userGuess === currentWordObj.word) {
+            if (userGuess === currentWord) {
                 clearInterval(timerInterval);
                 let timeBonus = timeLeft > 15 ? 5 : 0;
                 score += (10 + timeBonus);
@@ -251,14 +236,17 @@
         submitBtn.addEventListener("click", checkAnswer);
         userInputEl.addEventListener("keypress", (e) => { if (e.key === "Enter") checkAnswer(); });
 
+        // İLK HARF İPUCU MANTIĞI
         hintBtn.addEventListener("click", () => {
-            hintEl.textContent = `Hint: ${currentWordObj.hint}`;
-            score = Math.max(0, score - 2); scoreEl.textContent = score;
+            const firstLetter = currentWord.charAt(0).toUpperCase();
+            hintEl.textContent = `Hint: The first letter is '${firstLetter}'`;
+            score = Math.max(0, score - 2); 
+            scoreEl.textContent = score;
         });
 
         skipBtn.addEventListener("click", () => {
             clearInterval(timerInterval);
-            messageEl.textContent = `Skipped! The word was: ${currentWordObj.word}`;
+            messageEl.textContent = `Skipped! The word was: ${currentWord}`;
             messageEl.className = "message error";
             currentWordIndex++;
             setTimeout(loadNewWord, 1500);
